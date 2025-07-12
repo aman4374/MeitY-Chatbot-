@@ -1,0 +1,21 @@
+# Ignore API keys and environment config
+.env
+
+# Python cache and logs
+__pycache__/
+*.py[cod]
+*.log
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploaded and generated files
+uploads/
+video_upload/
+scraped_data/
+chroma_*/
+faiss_*/
