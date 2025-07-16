@@ -1,8 +1,12 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from backend.utils import compute_md5
 from backend.vector_store_scraped_faiss import is_scraped_already, persist_to_faiss_scraped
+from backend.utils import compute_md5_from_text
+
+SCRAPED_DATA_DIR = "scraped_data"
 
 def scrape_visible_text(url: str) -> str:
     try:
@@ -34,9 +38,17 @@ def scrape_and_ingest(url: str) -> str:
     if text.startswith("❌"):
         return text
 
-    url_hash = compute_md5(text)
+    url_hash = compute_md5_from_text(text)  # ✅ MD5 of content
+
+    # ✅ Check for duplicates
     if is_scraped_already(url_hash):
         return "⚠️ URL already ingested (duplicate detected)."
 
+    # ✅ Save raw scraped text for audit/debugging
+    os.makedirs(SCRAPED_DATA_DIR, exist_ok=True)
+    with open(os.path.join(SCRAPED_DATA_DIR, f"{url_hash}.txt"), "w", encoding="utf-8") as f:
+        f.write(text)
+
+    # ✅ Embed into FAISS
     persist_to_faiss_scraped(text, url, url_hash)
     return "✅ Website scraped and embedded successfully."

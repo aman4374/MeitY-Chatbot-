@@ -4,6 +4,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain.docstore.document import Document
 from backend.utils import compute_md5, split_text_into_chunks, ensure_directory
+from backend.utils import compute_text_md5
 
 PERSIST_DIR = "chroma_scraped_faiss"
 METADATA_FILE = os.path.join(PERSIST_DIR, "scraped_metadata.json")
@@ -22,15 +23,17 @@ else:
 
 def is_scraped_already(text: str) -> bool:
     """Compute hash of scraped text to avoid reprocessing."""
-    content_hash = compute_md5(text.encode("utf-8"))
+    content_hash = compute_text_md5(text)
     return content_hash in SCRAPED_HASHES
 
-def persist_to_faiss_scraped(text: str, source_url: str):
+def persist_to_faiss_scraped(text: str, source_url: str, url_hash: str):
+    """Embed and persist scraped text content into FAISS."""
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
-    content_hash = compute_md5(text.encode("utf-8"))
-    chunks = split_text_into_chunks(text)
-    docs = [Document(page_content=chunk, metadata={"source": source_url, "hash": content_hash}) for chunk in chunks]
 
+    chunks = split_text_into_chunks(text)
+    docs = [Document(page_content=chunk, metadata={"source": source_url, "hash": url_hash}) for chunk in chunks]
+
+    # Load existing DB or create new
     if os.path.exists(os.path.join(PERSIST_DIR, "index.faiss")):
         db = FAISS.load_local(PERSIST_DIR, embeddings, allow_dangerous_deserialization=True)
         db.add_documents(docs)
@@ -39,7 +42,8 @@ def persist_to_faiss_scraped(text: str, source_url: str):
 
     db.save_local(PERSIST_DIR)
 
-    SCRAPED_HASHES.add(content_hash)
+    # Save hash to avoid re-scraping
+    SCRAPED_HASHES.add(url_hash)
     with open(METADATA_FILE, "w") as f:
         json.dump(list(SCRAPED_HASHES), f)
 

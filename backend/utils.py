@@ -3,6 +3,7 @@ import os
 import pdfplumber
 import docx
 from pptx import Presentation
+from typing import List
 
 def compute_md5(file_path: str) -> str:
     """Compute the MD5 hash of a file to detect duplicates."""
@@ -11,6 +12,13 @@ def compute_md5(file_path: str) -> str:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+def compute_text_md5(text: str) -> str:
+    """Compute MD5 hash of a string (e.g., for scraped web content)."""
+    return hashlib.md5(text.encode('utf-8')).hexdigest()
+
+def compute_md5_from_text(text: str) -> str:
+    """Compute the MD5 hash of a text string to detect duplicates."""
+    return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 def extract_text_from_pdf(file_path: str) -> str:
     """Extract text from a PDF file using pdfplumber."""
@@ -61,8 +69,6 @@ def extract_text_from_file(file_path: str) -> str:
 def ensure_directory(path: str):
     """Create a directory if it doesn't exist."""
     os.makedirs(path, exist_ok=True)
-
-from typing import List
 
 def split_text_into_chunks(text: str, chunk_size: int = 1000, overlap: int = 200) -> List[str]:
     """

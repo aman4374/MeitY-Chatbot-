@@ -1,21 +1,54 @@
-# Ignore API keys and environment config
-.env
-
-# Python cache and logs
+# Python cache
 __pycache__/
 *.py[cod]
-*.log
+*.pyo
+*.pyd
+*.pkl
 
-# VS Code settings
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# IDEs and editor folders
 .vscode/
+.idea/
+*.swp
 
-# OS files
+# System files
 .DS_Store
 Thumbs.db
 
-# Uploaded and generated files
+# Logs
+*.log
+
+# Python bytecode / compiled objects
+*.so
+*.dll
+*.o
+*.a
+*.out
+
+# FAISS or Chroma vector store data
+chroma_golden_faiss/
+chroma_scraped_faiss/
+faiss_video/
+faiss_golden/
+faiss_scraped/
+
+# Uploaded or scraped raw data
 uploads/
 video_upload/
 scraped_data/
-chroma_*/
-faiss_*/
+
+# Environment variables
+.env
+
+# Streamlit cache (optional)
+.streamlit/
+__pycache__/
+
+# Output files or temp dumps
+*.tmp
+*.bak

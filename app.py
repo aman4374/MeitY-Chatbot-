@@ -27,11 +27,19 @@ if st.button("📥 Ingest Document") and uploaded_file:
         st.success(result)
 
 # ------------------ 🌐 Web Scraping ------------------
-url_input = st.text_input("🔗 Enter website URL to scrape")
-if st.button("🌐 Scrape and Ingest"):
-    with st.spinner("Scraping and embedding..."):
-        status = scrape_and_ingest(url_input)
-        st.success(status)
+url_input = st.text_input("Enter website URL to scrape:")
+if st.button("Scrape"):
+    url = url_input.strip()
+    
+    if url == "" or not url.startswith("http"):
+        st.error("❌ Please enter a valid URL starting with http or https.")
+    else:
+        status = scrape_and_ingest(url)
+        if status:
+            st.success("✅ Successfully scraped and ingested content.")
+        else:
+            st.error("❌ Failed to scrape the provided URL.")
+
 
 # ------------------ 🎥 Local Video Upload ------------------
 video_file = st.file_uploader("🎥 Upload MP4 video", type=["mp4"])
