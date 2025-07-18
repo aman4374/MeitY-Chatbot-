@@ -29,7 +29,7 @@ Thumbs.db
 *.o 
 *.a
 *.out
-#aman
+
 
 # FAISS or Chroma vector store data
 chroma_golden_faiss/
