@@ -5,6 +5,9 @@ import docx
 from pptx import Presentation
 from typing import List
 
+# No path changes needed in utils.py itself, as its functions operate on paths passed to them.
+# The calling modules are responsible for constructing paths relative to 'persistent_storage'.
+
 def compute_md5(file_path: str) -> str:
     """Compute the MD5 hash of a file to detect duplicates."""
     hash_md5 = hashlib.md5()
@@ -12,6 +15,7 @@ def compute_md5(file_path: str) -> str:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
 def compute_text_md5(text: str) -> str:
     """Compute MD5 hash of a string (e.g., for scraped web content)."""
     return hashlib.md5(text.encode('utf-8')).hexdigest()
