@@ -44,7 +44,7 @@ def persist_to_faiss_video(text: str, source: str, video_hash: str):
 
     # Load existing DB or create new - now correctly uses the updated VIDEO_FAISS_DIR
     if os.path.exists(os.path.join(index_path, "index.faiss")):
-        db = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
+        db = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True) # <<< Already here
         db.add_documents(docs)
     else:
         db = FAISS.from_documents(docs, embeddings)
@@ -60,4 +60,4 @@ def load_faiss_video(embeddings):
     index_path = VIDEO_FAISS_DIR # Correctly points to the updated directory
     if not os.path.exists(os.path.join(index_path, "index.faiss")):
         raise RuntimeError(f"❌ FAISS video index not found at {index_path}. Please ingest a video first.")
-    return FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
+    return FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True) # <<< Already here

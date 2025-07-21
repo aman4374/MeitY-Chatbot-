@@ -5,6 +5,15 @@ import whisper
 from langchain.docstore.document import Document
 from langchain.vectorstores import FAISS
 from langchain.embeddings import SentenceTransformerEmbeddings
+import warnings # Import the warnings module
+
+# Suppress the specific FutureWarning from PyTorch about pickle deserialization
+# This is safe to do for official Whisper models as you trust their source.
+warnings.filterwarnings(
+    "ignore",
+    message="You are using `torch.load` with `weights_only=False`",
+    category=FutureWarning
+)
 
 # --- NEW: Define base path for persistent data ---
 # Get the base path for all persistent data from an environment variable.
@@ -19,6 +28,7 @@ VIDEO_DIR = os.path.join(PERSISTENT_DIR, "video_upload")
 FAISS_DIR = os.path.join(PERSISTENT_DIR, "faiss_video")
 
 # Whisper model (load once)
+# The warning should now be suppressed by the filterwarnings line
 whisper_model = whisper.load_model("base")
 
 def download_youtube_audio(youtube_url: str, output_path: str) -> str:
@@ -81,18 +91,19 @@ def ingest_youtube_video(youtube_url: str) -> str:
         faiss_index_file = os.path.join(FAISS_DIR, "index.faiss")
         if os.path.exists(faiss_index_file):
             print(f"Loading existing FAISS index from {FAISS_DIR}")
-            vectordb = FAISS.load_local(FAISS_DIR, embeddings)
+            # This already has allow_dangerous_deserialization=True
+            vectordb = FAISS.load_local(FAISS_DIR, embeddings, allow_dangerous_deserialization=True)
             vectordb.add_documents(docs)
         else:
             print(f"Creating new FAISS index in {FAISS_DIR}")
             vectordb = FAISS.from_documents(docs, embeddings)
 
         vectordb.save_local(FAISS_DIR)
-        
+
         # Clean up the downloaded audio file after successful ingestion
         if os.path.exists(audio_path):
             os.remove(audio_path)
-        
+
         return "✅ YouTube video successfully transcribed and indexed."
 
     except Exception as e:

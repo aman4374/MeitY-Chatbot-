@@ -39,7 +39,7 @@ def ingest_file(file_path: str) -> str:
     # Extract text from the file.
     text = extract_text_from_file(file_path)
     if not text or len(text.strip()) < 20:
-        return "❌ No readable content found in the file."
+        return "❌ No readable content found in the file." 
 
     # Persist the extracted text to the FAISS vector store.
     # The 'persist_to_faiss_golden' function is responsible for using GOLDEN_FAISS_PATH to save the data.
