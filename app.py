@@ -105,6 +105,8 @@ import os
 import traceback
 from dotenv import load_dotenv
 
+
+
 # Load .env variables
 try:
     load_dotenv()
@@ -122,6 +124,11 @@ st.text(f"📁 Using persistent storage at: {BASE_PERSISTENT_DIR}")
 
 UPLOAD_DOCS_DIR = os.path.join(BASE_PERSISTENT_DIR, "uploads")
 UPLOAD_VIDEOS_DIR = os.path.join(BASE_PERSISTENT_DIR, "video_upload")
+if not os.path.exists(BASE_PERSISTENT_DIR):
+    st.error(f"❌ Persistent path {BASE_PERSISTENT_DIR} does not exist.")
+    st.stop()
+else:
+    st.success(f"✅ Persistent mount found at: {BASE_PERSISTENT_DIR}")
 
 try:
     os.makedirs(UPLOAD_DOCS_DIR, exist_ok=True)
