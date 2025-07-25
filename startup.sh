@@ -1,1 +1,1 @@
-streamlit run app.py --server.port 8000 --server.headless true --server.enableCORS false
+streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true --server.enableCORS false
