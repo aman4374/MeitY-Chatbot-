@@ -1,16 +1,14 @@
-name: Build and Deploy MeitY Chatbot
+name: Build and Deploy MeitY Chatbot App
 
 on:
-  # Run this workflow every time you push to the 'main' branch
   push:
     branches: [ "main" ]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: meity-chatbot-app                 # The name of your Azure App Service
-  AZURE_CONTAINER_REGISTRY: meitychatbotregistry.azurecr.io # Your ACR login server
-  IMAGE_NAME: chatbot-app                              # The name of your container image
+  AZURE_WEBAPP_NAME: meity-chatbot-app                 # CHANGE THIS to your App Service name
+  AZURE_CONTAINER_REGISTRY: meitychatbotregistry.azurecr.io # CHANGE THIS to your ACR login server
+  IMAGE_NAME: chatbot-app
 
 jobs:
   build:
@@ -27,7 +25,7 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and push image
+      - name: Build and push image to ACR
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -37,7 +35,7 @@ jobs:
   deploy:
     name: Deploy to Azure App Service
     runs-on: ubuntu-latest
-    needs: build # This job will only run after the 'build' job succeeds
+    needs: build
     steps:
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v2

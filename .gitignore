@@ -1,32 +1,18 @@
-# Virtual environment
+# Python virtual environment and cache
 venv/
+__pycache__/
+*.pyc
 
-# Environment variables
+# Secrets
 .env
 
-# Python cache
-__pycache__/
-*.py[cod]
-*.pyo
+# Persistent data and knowledge base
+# These should be built and uploaded to Azure manually, not stored in Git
+persistent_storage/
+source_documents/
 
-# FAISS/Chroma persistent storage
-persistent_storage/chroma_golden_faiss/
-persistent_storage/chroma_scraped_faiss/
-persistent_storage/faiss_video/
-
-# Uploaded and scraped files
-uploads/
-scraped_data/
-video_upload/
-
-# Logs (if any)
-*.log
-
-# IDE / Editor files
+# IDE and OS files
 .vscode/
 .idea/
-*.swp
-
-# OS files
 .DS_Store
 Thumbs.db

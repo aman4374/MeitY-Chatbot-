@@ -1,32 +1,26 @@
 import os
-import requests
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 def search_tavily(query: str) -> str:
-    tavily_api_key = os.getenv("TAVILY_API_KEY")
-    if not tavily_api_key:
-        return "⚠️ Tavily API key is missing in .env file."
+    """
+    Performs a web search using the Tavily API and returns a formatted string of results.
+    """
+    api_key = os.environ.get("TAVILY_API_KEY")
+    if not api_key:
+        return "Tavily API key is not set in environment variables. Cannot perform web search."
 
-    url = "https://api.tavily.com/search"
-    payload = {
-        "api_key": tavily_api_key,
-        "query": query,
-        "search_depth": "advanced",
-        "include_answer": True,
-        "include_raw_content": False,
-        "max_results": 3
-    }
-    try:
-        response = requests.post(url, json=payload)
-        result = response.json()
+    # Initialize the tool to get a maximum of 3 results
+    tool = TavilySearchResults(max_results=3)
+    
+    # Get the search results
+    results = tool.invoke(query)
+    
+    # Format the results into a readable string
+    if not results:
+        return "No relevant results found from the web search."
 
-        answer = result.get("answer", "❌ No internet answer found.")
-
-        sources = result.get("results", [])
-        if sources:
-            links = "\n".join([f"- [{s['title']}]({s['url']})" for s in sources])
-            return f"{answer}\n\n🔗 Sources:\n{links}"
-        else:
-            return answer
-
-    except Exception as e:
-        return f"⚠️ Tavily API failed: {e}"
+    formatted_results = []
+    for i, res in enumerate(results):
+        formatted_results.append(f"Result {i+1}:\nContent: {res['content']}\nSource: {res['url']}")
+    
+    return "\n\n".join(formatted_results)
